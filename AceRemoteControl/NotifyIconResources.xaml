@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tb="http://www.hardcodet.net/taskbar"
+                    xmlns:windowlessSample="clr-namespace:TCDaemonTray"
+                    xmlns:converters="clr-namespace:TCDaemonTray.Converters"
+                    xmlns:common="clr-namespace:TCDaemonUpdater.Common;assembly=TCDaemonUpdater.Common"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:controls="clr-namespace:TCDaemonTray.Controls"
+                    xmlns:aceRemoteControl="clr-namespace:AceRemoteControl"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+    <ContextMenu x:Shared="false" x:Key="SysTrayMenu">
+        <MenuItem Header="Настройка каналов" Command="{Binding ChannelSetupCommand}" />
+        <MenuItem Header="Выход" Command="{Binding ExitCommand}" />
+    </ContextMenu>
+
+    <controls:NotifyIconWpf 
+        x:Key="NotifyIconWpf"
+        ToolTipText="Удаленное управление Ace"
+        ContextMenu="{StaticResource SysTrayMenu}"
+        DoubleClick="{Binding Path=DoubleClick}"
+    >
+        <controls:NotifyIconWpf.DataContext>
+            <aceRemoteControl:NotifyIconViewModel />
+        </controls:NotifyIconWpf.DataContext>
+    </controls:NotifyIconWpf>
+</ResourceDictionary>
