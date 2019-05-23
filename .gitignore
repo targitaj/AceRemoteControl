@@ -2,3 +2,9 @@
 /AceRemoteControl/bin
 /AceRemoteControl/obj
 /AceRemoteControl/*.user
+/*.user
+/.vs/AceRemoteControl/v14/.suo
+/.vs/AceRemoteControl/v15/.suo
+/.vs
+/RawInputProcessor/bin
+/RawInputProcessor/obj

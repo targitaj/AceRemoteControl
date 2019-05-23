@@ -30,7 +30,7 @@ namespace AceRemoteControl
     /// </summary>
     public partial class Information : Window
     {
-        private static ILog _logger = LogManagerHelper.GetLogger<Information>();
+        //private static ILog _logger = LogManagerHelper.GetLogger<Information>();
         private static DateTime _closeTime;
         private static Thread _lastThread;
         private static Thread _windowCloseThread;
@@ -229,7 +229,7 @@ namespace AceRemoteControl
                     }
                     catch (Exception e)
                     {
-                        _logger.Debug("_lastThread", e);
+                        //_logger.Debug("_lastThread", e);
                     }
 
 
@@ -370,7 +370,7 @@ namespace AceRemoteControl
 
                 StartVideo(nuber, window, text);
 
-                _logger.Debug("Kill after SaveStreamToFile");
+                //_logger.Debug("Kill after SaveStreamToFile");
                 //File.AppendAllText("kill.txt",
                 //    DateTime.Now.ToString("O") + " " + "Was killed");
 
@@ -384,7 +384,7 @@ namespace AceRemoteControl
             }
             catch (HttpListenerException le)
             {
-                _logger.Debug("All is ok HttpListenerException");
+                //_logger.Debug("All is ok HttpListenerException");
             }
             catch (Exception e)
             {
@@ -401,7 +401,7 @@ namespace AceRemoteControl
                     catch { }
                 }
 
-                _logger.Debug("Killed", e);
+                //_logger.Debug("Killed", e);
                 //File.AppendAllText("kill.txt",
                 //    DateTime.Now.ToString("O") + " " + "Was killed" + Environment.NewLine +
                 //    App.GetExceptionFullInformation(e) + Environment.NewLine);
@@ -471,7 +471,7 @@ namespace AceRemoteControl
             }
             catch (Exception exception)
             {
-                _logger.Debug("SaveStreamToFile", exception);
+                //_logger.Debug("SaveStreamToFile", exception);
                 throw;
             }
             finally

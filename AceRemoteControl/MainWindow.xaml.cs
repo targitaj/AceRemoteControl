@@ -14,15 +14,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using RawInputProcessor;
 
 namespace AceRemoteControl
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private const string FILE_SETTINGS = "settings.json";
+
+        private RawPresentationInput _rawInput;
+        private int _deviceCount;
+        private RawInputEventArgs _event;
 
         public MainWindow()
         {
@@ -58,7 +63,7 @@ namespace AceRemoteControl
 
         private void UIElement_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //File.AppendAllText("keylog.txt", e.Key.ToString());
+            File.AppendAllText("keylog.txt", e.Key.ToString());
         }
 
         private void Control_OnPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -80,6 +85,36 @@ namespace AceRemoteControl
             {
                 ((Channel)lb1Item).IsSelected = false;
             }
+        }
+
+        public RawInputEventArgs Event
+        {
+            get { return _event; }
+            set
+            {
+                _event = value;
+                //OnPropertyChanged();
+            }
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            //StartWndProcHandler();
+            base.OnSourceInitialized(e);
+        }
+
+        private void OnKeyPressed(object sender, RawInputEventArgs e)
+        {
+            //Event = e;
+            //DeviceCount = _rawInput.NumberOfKeyboards;
+            //e.Handled = (ShouldHandle.IsChecked == true);
+        }
+
+        private void StartWndProcHandler()
+        {
+            //_rawInput = new RawPresentationInput((new HwndSource)null, RawInputCaptureMode.Foreground);
+            //_rawInput.KeyPressed += OnKeyPressed;
+                //DeviceCount = _rawInput.NumberOfKeyboards;
         }
     }
 }

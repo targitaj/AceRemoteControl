@@ -12,12 +12,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using AceRemoteControl;
 using Microsoft.Win32;
 using NHotkey.Wpf;
 using Prism.Commands;
 using Prism.Mvvm;
+using RawInputProcessor;
 using Application = System.Windows.Application;
 
 namespace AceRemoteControl
@@ -53,6 +55,10 @@ namespace AceRemoteControl
         [ExcludeFromCodeCoverage]
         public NotifyIconViewModel()
         {
+            var window = new Window();
+            var handle = new WindowInteropHelper(window).EnsureHandle();
+            StartWndProcHandler(handle);
+
             if ((bool)(DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue))
             {
                 return;
@@ -74,6 +80,7 @@ namespace AceRemoteControl
                             }
                     }.Start();
                 });
+
 
             HotkeyManager.Current.AddOrReplace("Decimal", Key.Decimal, ModifierKeys.None,
                 (e, args) =>
@@ -132,6 +139,22 @@ namespace AceRemoteControl
                 });
 
             RegisterNums();
+        }
+
+        private RawPresentationInput _rawInput;
+
+        private void OnKeyPressed(object sender, RawInputEventArgs e)
+        {
+            //Event = e;
+            //DeviceCount = _rawInput.NumberOfKeyboards;
+            //e.Handled = (ShouldHandle.IsChecked == true);
+        }
+
+        private void StartWndProcHandler(IntPtr hwnd)
+        {
+            _rawInput = new RawPresentationInput(hwnd, RawInputCaptureMode.ForegroundAndBackground);
+            _rawInput.KeyPressed += OnKeyPressed;
+            //DeviceCount = _rawInput.NumberOfKeyboards;
         }
 
         private void RegisterNums()

@@ -17,7 +17,6 @@ namespace AceRemoteControl
     /// </summary>
     public partial class App : Application
     {
-        private ILog _logger = LogManagerHelper.GetLogger<App>();
 
         private NotifyIconWpf notifyIcon;
 
@@ -33,14 +32,14 @@ namespace AceRemoteControl
 
             DispatcherUnhandledException += (sender, args) =>
             {
-                _logger.Debug("DispatcherUnhandledException", args.Exception);
+                //_logger.Debug("DispatcherUnhandledException", args.Exception);
                 args.Handled = true;
             };
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            _logger.Debug("CurrentDomain_UnhandledException", e.ExceptionObject as Exception);
+            //_logger.Debug("CurrentDomain_UnhandledException", e.ExceptionObject as Exception);
         }
 
 
