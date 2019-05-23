@@ -63,7 +63,7 @@ namespace AceRemoteControl
 
         private void UIElement_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            File.AppendAllText("keylog.txt", e.Key.ToString());
+           //File.AppendAllText("keylog.txt", e.Key.ToString());
         }
 
         private void Control_OnPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)

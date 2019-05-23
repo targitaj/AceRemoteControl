@@ -64,87 +64,175 @@ namespace AceRemoteControl
                 return;
             }
 
-            HotkeyManager.Current.AddOrReplace("Divide", Key.Divide, ModifierKeys.None,
-                (e, args) =>
-                {
-                    new Process()
-                    {
-                        StartInfo =
-                            {
-                                CreateNoWindow = true,
-                                WindowStyle = ProcessWindowStyle.Hidden,
-                                FileName = Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess
-                                    ? Environment.ExpandEnvironmentVariables(@"%windir%\sysnative\DisplaySwitch.exe")
-                                    : "DisplaySwitch.exe",
-                                Arguments = " /extend"
-                            }
-                    }.Start();
-                });
+            //HotkeyManager.Current.AddOrReplace("Divide", Key.Divide, ModifierKeys.None,
+            //    (e, args) =>
+            //    {
+            //        new Process()
+            //        {
+            //            StartInfo =
+            //                {
+            //                    CreateNoWindow = true,
+            //                    WindowStyle = ProcessWindowStyle.Hidden,
+            //                    FileName = Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess
+            //                        ? Environment.ExpandEnvironmentVariables(@"%windir%\sysnative\DisplaySwitch.exe")
+            //                        : "DisplaySwitch.exe",
+            //                    Arguments = " /extend"
+            //                }
+            //        }.Start();
+            //    });
 
 
-            HotkeyManager.Current.AddOrReplace("Decimal", Key.Decimal, ModifierKeys.None,
-                (e, args) =>
-                {
-                    Process.Start(new ProcessStartInfo("shutdown", "/s /t 1 /f")
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    });
-                });
+            //HotkeyManager.Current.AddOrReplace("Decimal", Key.Decimal, ModifierKeys.None,
+            //    (e, args) =>
+            //    {
+            //        Process.Start(new ProcessStartInfo("shutdown", "/s /t 1 /f")
+            //        {
+            //            CreateNoWindow = true,
+            //            UseShellExecute = false
+            //        });
+            //    });
 
-            HotkeyManager.Current.AddOrReplace("Subtract", Key.Subtract, ModifierKeys.None,
-                (e, args) =>
-                {
-                    //Records.Add(DateTime.Now.ToString("O") + " START");
+            //HotkeyManager.Current.AddOrReplace("Subtract", Key.Subtract, ModifierKeys.None,
+            //    (e, args) =>
+            //    {
+            //        //Records.Add(DateTime.Now.ToString("O") + " START");
 
-                    if (!File.Exists(HistoryFile))
-                    {
-                        File.WriteAllText(HistoryFile, "0");
-                    }
+            //        if (!File.Exists(HistoryFile))
+            //        {
+            //            File.WriteAllText(HistoryFile, "0");
+            //        }
 
-                    var mychannels = MainWindowModel.ReadChannels();
-                    var myNumber = int.Parse(File.ReadAllText(HistoryFile));
-                    myNumber++;
+            //        var mychannels = MainWindowModel.ReadChannels();
+            //        var myNumber = int.Parse(File.ReadAllText(HistoryFile));
+            //        myNumber++;
 
-                    if (mychannels.Count > 0)
-                    {
-                        myNumber = mychannels.Count > myNumber ? myNumber : 0;
-                    }
+            //        if (mychannels.Count > 0)
+            //        {
+            //            myNumber = mychannels.Count > myNumber ? myNumber : 0;
+            //        }
 
-                    //Records.Add(DateTime.Now.ToString("O") + " Before ShowInformation");
+            //        //Records.Add(DateTime.Now.ToString("O") + " Before ShowInformation");
 
-                    ShowInformation(myNumber.ToString(), false);
+            //        ShowInformation(myNumber.ToString(), false);
 
-                    //Records.Add(DateTime.Now.ToString("O") + " END");
-                });
+            //        //Records.Add(DateTime.Now.ToString("O") + " END");
+            //    });
 
-            HotkeyManager.Current.AddOrReplace("Add", Key.Add, ModifierKeys.None,
-                (e, args) =>
-                {
-                    if (!File.Exists(HistoryFile))
-                    {
-                        File.WriteAllText(HistoryFile, "0");
-                    }
+            //HotkeyManager.Current.AddOrReplace("Add", Key.Add, ModifierKeys.None,
+            //    (e, args) =>
+            //    {
+            //        if (!File.Exists(HistoryFile))
+            //        {
+            //            File.WriteAllText(HistoryFile, "0");
+            //        }
 
-                    var mychannels = MainWindowModel.ReadChannels();
-                    var myNumber = int.Parse(File.ReadAllText(HistoryFile));
-                    myNumber--;
+            //        var mychannels = MainWindowModel.ReadChannels();
+            //        var myNumber = int.Parse(File.ReadAllText(HistoryFile));
+            //        myNumber--;
 
-                    if (mychannels.Count > 0)
-                    {
-                        myNumber = myNumber < 0 ? mychannels.Count - 1 : myNumber;
-                    }
+            //        if (mychannels.Count > 0)
+            //        {
+            //            myNumber = myNumber < 0 ? mychannels.Count - 1 : myNumber;
+            //        }
 
-                    ShowInformation(myNumber.ToString(), false);
-                });
+            //        ShowInformation(myNumber.ToString(), false);
+            //    });
 
-            RegisterNums();
+            //RegisterNums();
         }
 
         private RawPresentationInput _rawInput;
+        private List<string> keyboards = new List<string>();
 
         private void OnKeyPressed(object sender, RawInputEventArgs e)
         {
+            lock (keyboards)
+            {
+                if (!keyboards.Contains(e.Device.Name))
+                {
+                    keyboards.Add(e.Device.Name);
+                    File.AppendAllText("keyboards.txt", e.Device.Name + Environment.NewLine);
+                }
+            }
+
+            if (e.Device.Name.Contains("VID_2319&PID_0014") && e.KeyPressState == KeyPressState.Up)
+            {
+                List<Channel> mychannels = null;
+                int myNumber = 0;
+                e.Handled = true;
+
+                switch (e.Key)
+                {
+                    case Key.D1:
+                        ShowInformation("1");
+                        break;
+                    case Key.D2:
+                        ShowInformation("2");
+                        break;
+                    case Key.D3:
+                        ShowInformation("3");
+                        break;
+                    case Key.D4:
+                        ShowInformation("4");
+                        break;
+                    case Key.D5:
+                        ShowInformation("5");
+                        break;
+                    case Key.D6:
+                        ShowInformation("6");
+                        break;
+                    case Key.D7:
+                        ShowInformation("7");
+                        break;
+                    case Key.D8:
+                        ShowInformation("8");
+                        break;
+                    case Key.D9:
+                        ShowInformation("9");
+                        break;
+                    case Key.D0:
+                        ShowInformation("0");
+                        break;
+                    case Key.PageUp:
+                        if (!File.Exists(HistoryFile))
+                        {
+                            File.WriteAllText(HistoryFile, "0");
+                        }
+
+                        mychannels = MainWindowModel.ReadChannels();
+                        myNumber = int.Parse(File.ReadAllText(HistoryFile));
+                        myNumber++;
+
+                        if (mychannels.Count > 0)
+                        {
+                            myNumber = mychannels.Count > myNumber ? myNumber : 0;
+                        }
+
+                        ShowInformation(myNumber.ToString(), false);
+
+                        break;
+                    case Key.PageDown:
+                        
+                            if (!File.Exists(HistoryFile))
+                            {
+                                File.WriteAllText(HistoryFile, "0");
+                            }
+
+                            mychannels = MainWindowModel.ReadChannels();
+                            myNumber = int.Parse(File.ReadAllText(HistoryFile));
+                            myNumber--;
+
+                            if (mychannels.Count > 0)
+                            {
+                                myNumber = myNumber < 0 ? mychannels.Count - 1 : myNumber;
+                            }
+
+                            ShowInformation(myNumber.ToString(), false);
+                        break;
+                        
+                }
+            }
+            //ShowInformation(args.Name.Substring(6));
             //Event = e;
             //DeviceCount = _rawInput.NumberOfKeyboards;
             //e.Handled = (ShouldHandle.IsChecked == true);

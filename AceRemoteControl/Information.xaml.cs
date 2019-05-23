@@ -115,12 +115,15 @@ namespace AceRemoteControl
                         var channelAudio = channels.FirstOrDefault(f => f.Text == channel)?.AudioChannelName;
                         if (!string.IsNullOrWhiteSpace(channel))
                         {
-                            
+
+
+                            //string regex =
+                            //    $"{Regex.Escape($"tvg-name=\"{channel}(.*?)\r\n")}{Regex.Escape($"#EXTGRP:")}(.*?)\r\n(.*?)\r\n";
 
                             string regex =
-                                $"{Regex.Escape($"#EXTINF:0,{channel}\r\n")}{Regex.Escape($"#EXTGRP:")}(.*?)\r\n(.*?)\r\n";
+                                $"{Regex.Escape($"tvg-name=\"{channel}")}(.*?)\r\n(.*?)\r\n(.*?)\r\n";
                             var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
-                            var url = matches[0].Groups[2].Value;
+                            var url = matches[0].Groups[3].Value;
 
                             var vlcEngineProcess = Process.GetProcessesByName("vlc");
                             foreach (var process in vlcEngineProcess)

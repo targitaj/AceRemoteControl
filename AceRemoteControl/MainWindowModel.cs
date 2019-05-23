@@ -195,7 +195,7 @@ namespace AceRemoteControl
         public static List<Channel> ReadAllChannels(string sourceStr)
         {
             var res = new List<Channel>();
-            var matchExt = ConfigurationManager.AppSettings["UseEdem"] == "true" ? "#EXTINF:0," : "#EXTINF:-1,";
+            var matchExt = ConfigurationManager.AppSettings["UseEdem"] == "true" ? "tvg-name=\"" : "#EXTINF:-1,";
 
             //string sourceStr = File.ReadAllText(source, new UTF8Encoding());
             var selChannels = ReadChannels();
@@ -206,7 +206,7 @@ namespace AceRemoteControl
                 if (idx < 0)
                     break;
                 idx += matchExt.Length;
-                while (sourceStr[idx] != '\r')
+                while (sourceStr[idx] != '"')
                 {
                     idx++;
                 }
