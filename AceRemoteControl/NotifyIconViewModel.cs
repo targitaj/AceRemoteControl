@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Security.Permissions;
 using System.Security.Principal;
 using System.Threading;
@@ -32,6 +34,7 @@ namespace AceRemoteControl
     public class NotifyIconViewModel : BindableBase
     {
         public const string HistoryFile = "history.txt";
+        private static string _keyBoardName;
 
         /// <summary>
         /// Shows TC Daemon Updater log
@@ -64,81 +67,12 @@ namespace AceRemoteControl
                 return;
             }
 
-            //HotkeyManager.Current.AddOrReplace("Divide", Key.Divide, ModifierKeys.None,
-            //    (e, args) =>
-            //    {
-            //        new Process()
-            //        {
-            //            StartInfo =
-            //                {
-            //                    CreateNoWindow = true,
-            //                    WindowStyle = ProcessWindowStyle.Hidden,
-            //                    FileName = Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess
-            //                        ? Environment.ExpandEnvironmentVariables(@"%windir%\sysnative\DisplaySwitch.exe")
-            //                        : "DisplaySwitch.exe",
-            //                    Arguments = " /extend"
-            //                }
-            //        }.Start();
-            //    });
+            if (File.Exists("keyboards.txt"))
+            {
+                keyboards = File.ReadAllLines("keyboards.txt").ToList();
+            }
 
-
-            //HotkeyManager.Current.AddOrReplace("Decimal", Key.Decimal, ModifierKeys.None,
-            //    (e, args) =>
-            //    {
-            //        Process.Start(new ProcessStartInfo("shutdown", "/s /t 1 /f")
-            //        {
-            //            CreateNoWindow = true,
-            //            UseShellExecute = false
-            //        });
-            //    });
-
-            //HotkeyManager.Current.AddOrReplace("Subtract", Key.Subtract, ModifierKeys.None,
-            //    (e, args) =>
-            //    {
-            //        //Records.Add(DateTime.Now.ToString("O") + " START");
-
-            //        if (!File.Exists(HistoryFile))
-            //        {
-            //            File.WriteAllText(HistoryFile, "0");
-            //        }
-
-            //        var mychannels = MainWindowModel.ReadChannels();
-            //        var myNumber = int.Parse(File.ReadAllText(HistoryFile));
-            //        myNumber++;
-
-            //        if (mychannels.Count > 0)
-            //        {
-            //            myNumber = mychannels.Count > myNumber ? myNumber : 0;
-            //        }
-
-            //        //Records.Add(DateTime.Now.ToString("O") + " Before ShowInformation");
-
-            //        ShowInformation(myNumber.ToString(), false);
-
-            //        //Records.Add(DateTime.Now.ToString("O") + " END");
-            //    });
-
-            //HotkeyManager.Current.AddOrReplace("Add", Key.Add, ModifierKeys.None,
-            //    (e, args) =>
-            //    {
-            //        if (!File.Exists(HistoryFile))
-            //        {
-            //            File.WriteAllText(HistoryFile, "0");
-            //        }
-
-            //        var mychannels = MainWindowModel.ReadChannels();
-            //        var myNumber = int.Parse(File.ReadAllText(HistoryFile));
-            //        myNumber--;
-
-            //        if (mychannels.Count > 0)
-            //        {
-            //            myNumber = myNumber < 0 ? mychannels.Count - 1 : myNumber;
-            //        }
-
-            //        ShowInformation(myNumber.ToString(), false);
-            //    });
-
-            //RegisterNums();
+            _keyBoardName = ConfigurationManager.AppSettings["KeyBoardName"];
         }
 
         private RawPresentationInput _rawInput;
@@ -155,7 +89,7 @@ namespace AceRemoteControl
                 }
             }
 
-            if (e.Device.Name.Contains("VID_2319&PID_0014") && e.KeyPressState == KeyPressState.Up)
+            if (e.Device.Name.Contains(_keyBoardName) && e.KeyPressState == KeyPressState.Up)
             {
                 List<Channel> mychannels = null;
                 int myNumber = 0;
