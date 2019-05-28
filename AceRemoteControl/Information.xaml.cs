@@ -44,11 +44,46 @@ namespace AceRemoteControl
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+        private bool IsUpDown
+        {
+            get { return _isUpDown;}
+            set
+            {
+                _isUpDown = value;
+
+                if (value)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        spTop.Visibility = Visibility.Visible;
+                        spBottom.Visibility = Visibility.Collapsed;
+                        
+                    });
+                    
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        spTop.Visibility = Visibility.Collapsed;
+                        spBottom.Visibility = Visibility.Visible;
+
+                    });
+                }
+                Dispatcher.Invoke(async () =>
+                {
+                    await SetPosition();
+                });
+
+            }
+        } 
+
         public string Text
         {
             get { return tbText?.Text; }
             set
             {
+                IsUpDown = false;
                 tbText.Text = value;
                 _closeTime = DateTime.Now.AddSeconds(2);
 
@@ -66,6 +101,79 @@ namespace AceRemoteControl
 
                 tbName.Text = myChannel;
                 StartVideo(tbText.Text, this, string.Empty);
+            }
+        }
+
+        public void UpDown(bool? isUp)
+        {
+            string number = "0";
+
+            if (File.Exists(NotifyIconViewModel.HistoryFile))
+            {
+                number = File.ReadAllText(NotifyIconViewModel.HistoryFile);
+            }
+            var myNumber = int.Parse(number);
+
+            if (!isUp.HasValue)
+            {
+                Text = number;
+            }
+            else
+            {
+                var mychannels = MainWindowModel.ReadChannels();
+                if (isUp == true)
+                {
+                    myNumber--;
+
+                    if (myNumber < 0)
+                    {
+                        myNumber = mychannels.Count;
+                    }
+                }
+                else
+                {
+                    myNumber++;
+
+                    if (myNumber >= mychannels.Count)
+                    {
+                        myNumber = 0;
+                    }
+                }
+
+                var first = myNumber - 2;
+                var second = myNumber - 1;
+                var forth = myNumber + 1;
+                var fith = myNumber + 2;
+
+                if (first == -1)
+                {
+                    first = mychannels.Count;
+                }
+
+                if (first == -2)
+                {
+                    first = mychannels.Count - 1;
+                    second = mychannels.Count;
+                }
+
+                if (fith == mychannels.Count)
+                {
+                    fith = 0;
+                }
+
+                if (fith == mychannels.Count + 1)
+                {
+                    fith = 1;
+                    forth = 2;
+                }
+
+                tb1.Text = first + " " + mychannels[first].Text;
+                tb2.Text = second + " " + mychannels[second].Text;
+                tb3.Text = myNumber + " " + mychannels[myNumber].Text;
+                tb4.Text = forth + " " + mychannels[forth].Text;
+                tb5.Text = fith + " " + mychannels[fith].Text;
+
+                IsUpDown = true;
             }
         }
 
@@ -95,7 +203,6 @@ namespace AceRemoteControl
             {
                 _lastThread = new Thread(() =>
                 {
-
                     try
                     {
                         started = null;
@@ -112,14 +219,8 @@ namespace AceRemoteControl
 
                         }
 
-                        var channelAudio = channels.FirstOrDefault(f => f.Text == channel)?.AudioChannelName;
                         if (!string.IsNullOrWhiteSpace(channel))
                         {
-
-
-                            //string regex =
-                            //    $"{Regex.Escape($"tvg-name=\"{channel}(.*?)\r\n")}{Regex.Escape($"#EXTGRP:")}(.*?)\r\n(.*?)\r\n";
-
                             string regex =
                                 $"{Regex.Escape($"tvg-name=\"{channel}")}(.*?)\r\n(.*?)\r\n(.*?)\r\n";
                             var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
@@ -144,105 +245,6 @@ namespace AceRemoteControl
                 _windowCloseThread.Start();
 
             }
-            else
-            {
-
-
-                _lastThread = new Thread(() =>
-                {
-
-                    try
-                    {
-                        started = null;
-                        Application.Current.Dispatcher.Invoke(() => { Helper.RefreshTrayArea(); });
-                        string list = GetListOfChannels();
-                        var channels = MainWindowModel.ReadChannels();
-                        var number = int.Parse(nuber);
-                        var channel = text;
-
-                        if (channels.Count > 0 && channel == string.Empty)
-                        {
-                            number = channels.Count > number ? number : channels.Count - 1;
-                            channel = channels[number].Text;
-
-                        }
-
-                        var channelAudio = channels.FirstOrDefault(f => f.Text == channel)?.AudioChannelName;
-                        if (!string.IsNullOrWhiteSpace(channel))
-                        {
-                            string regex =
-                                $"{Regex.Escape($"#EXTINF:-1,{channel}")}\n{Regex.Escape("acestream://")}(.*?)\n";
-                            var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
-                            var aceEngineFileInfo = new FileInfo(ConfigurationManager.AppSettings["AceEnginePath"]);
-                            var aceEngineProcess = Process.GetProcessesByName(
-                                aceEngineFileInfo.Name.Replace(aceEngineFileInfo.Extension, ""));
-
-                            //foreach (var process in aceEngineProcess)
-                            //{
-                            //    process.Kill();
-                            //}
-
-                            var vlcEngineProcess = Process.GetProcessesByName("vlc");
-
-                            foreach (var process in vlcEngineProcess)
-                            {
-                                process.Kill();
-                            }
-
-
-                            FileInfo enginePath = new FileInfo(ConfigurationManager.AppSettings["AceEnginePath"]);
-
-                            if (!aceEngineProcess.Any())
-                            {
-                                Process.Start(enginePath.FullName);
-                            }
-
-                            var streamUrl =
-                                $"http://127.0.0.1:{ConfigurationManager.AppSettings["AcePort"]}/ace/getstream?id={matches[0].Groups[1].Value}";
-
-                            _monitorStatusThread = new Thread(() => { MonitorStatus(streamUrl, nuber, window, text); });
-                            _monitorStatusThread.Start();
-
-                            string localHostUrl = "http://localhost";
-                            string port = "9988";
-
-                            string prefix = $"{localHostUrl}:{port}/";
-
-                            while (!started.HasValue)
-                            {
-                                Thread.Sleep(50);
-                            }
-
-                            if (started == true)
-                            {
-                                Process.Start(ConfigurationManager.AppSettings["VLCPath"],
-                                    $"--fullscreen --audio-language=rus --qt-fullscreen-screennumber={Screen.AllScreens.Length - 1} {prefix}");
-                            }
-
-                            //Process.Start(ConfigurationManager.AppSettings["VLCPath"],
-                            //    $"--fullscreen --audio-language=rus --qt-fullscreen-screennumber={Screen.AllScreens.Length - 1} {@"C:\svn\trunk\AceRemoteControl\AceRemoteControl\bin\Debug\VideoFileMonitorStatus.avi"}");
-
-                            //Process.Start(ConfigurationManager.AppSettings["VLCPath"],
-                            //    $"--fullscreen --audio-language=rus --qt-fullscreen-screennumber={Screen.AllScreens.Length - 1} {streamUrl}");
-
-
-
-
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        //_logger.Debug("_lastThread", e);
-                    }
-
-
-                });
-                //});
-                _windowCloseThread.Start();
-                _lastThread.Start();
-            }
-
-            
         }
 
         private static int tryCount = 0;
@@ -250,6 +252,7 @@ namespace AceRemoteControl
         private static Stream stream = null;
         private static HttpListenerResponse contextResponse;
         private static HttpListener httpListener;
+        private bool _isUpDown;
 
         private static void MonitorStatus(string url, string nuber, Window window, string text)
         {
@@ -516,29 +519,53 @@ namespace AceRemoteControl
             InitializeComponent();
             Activated += async (sender, args) =>
             {
+                await SetPosition();
                 //var returnScreens = new Func<Screen[]>(() => { return Screen.AllScreens; });
 
                 //Task<Screen[]> task = new Task<Screen[]>();
 
                 ;
 
-                var screens = await Task.Run(() => Screen.AllScreens);
-                //while (screens.Length <= 1)
+                //var screens = await Task.Run(() => Screen.AllScreens);
+                ////while (screens.Length <= 1)
+                ////{
+                ////    Thread.Sleep(100);
+                ////    screens = await Task.Run(() => Screen.AllScreens);
+                ////}
+
+                //var notPrimary = screens.FirstOrDefault(f => !Equals(f, Screen.PrimaryScreen));
+
+                //if (notPrimary == null)
                 //{
-                //    Thread.Sleep(100);
-                //    screens = await Task.Run(() => Screen.AllScreens);
+                //    notPrimary = screens.First();
                 //}
 
-                var notPrimary = screens.FirstOrDefault(f => !Equals(f, Screen.PrimaryScreen));
-
-                if (notPrimary == null)
-                {
-                    notPrimary = screens.First();
-                }
-
-                Left = notPrimary.Bounds.X + 40;
-                Top = 40;
+                //Left = notPrimary.Bounds.X + 40;
+                //Top = 40;
             };
+        }
+
+        private async Task SetPosition()
+        {
+            var screens = await Task.Run(() => Screen.AllScreens);
+
+            var notPrimary = screens.FirstOrDefault(f => !Equals(f, Screen.PrimaryScreen));
+
+            if (notPrimary == null)
+            {
+                notPrimary = screens.First();
+            }
+
+            Left = notPrimary.Bounds.X + 40;
+
+            if (IsUpDown)
+            {
+                Top = notPrimary.Bounds.Y - 40;
+            }
+            else
+            {
+                Top = 40;
+            }
         }
     }
 }
