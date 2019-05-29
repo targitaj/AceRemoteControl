@@ -146,7 +146,6 @@ namespace AceRemoteControl
 
                         break;
                     case Key.PageDown:
-                        
                             if (!File.Exists(HistoryFile))
                             {
                                 File.WriteAllText(HistoryFile, "0");
@@ -163,7 +162,15 @@ namespace AceRemoteControl
 
                             ShowInformation(myNumber.ToString(), false);
                         break;
-                        
+                    case Key.Up:
+                        UpDown(true);
+                        break;
+                    case Key.Down:
+                        UpDown(false);
+                        break;
+                    case Key.Enter:
+                        UpDown(null);
+                        break;
                 }
             }
             //ShowInformation(args.Name.Substring(6));
@@ -198,15 +205,8 @@ namespace AceRemoteControl
             if (mainWindow == null)
             {
                 Application.Current.MainWindow = new Information();
-
-                //Records.Add(DateTime.Now.ToString("O") + " Before show");
-
                 Application.Current.MainWindow.Show();
-
-                //Records.Add(DateTime.Now.ToString("O") + " After show");
             }
-
-
 
             var infText = ((Information) Application.Current.MainWindow).Text;
 
@@ -219,12 +219,22 @@ namespace AceRemoteControl
                 ((Information)Application.Current.MainWindow).Text = text;
             }
 
-            //Records.Add(DateTime.Now.ToString("O") + " Before Activate");
+            Application.Current.MainWindow.Activate();
+        }
+
+        public void UpDown(bool? isUp)
+        {
+            var mainWindow = Application.Current.MainWindow as Information;
+
+            if (mainWindow == null)
+            {
+                Application.Current.MainWindow = new Information();
+                Application.Current.MainWindow.Show();
+            }
+
+            ((Information)Application.Current.MainWindow).UpDown(isUp);
 
             Application.Current.MainWindow.Activate();
-
-
-            //Records.Add(DateTime.Now.ToString("O") + " After Activate");
         }
 
         /// <summary>

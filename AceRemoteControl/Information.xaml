@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AceRemoteControl"
         mc:Ignorable="d"
-        Title="Information" Height="120" Width="1500"
+        Title="Information" Height="235" Width="1500"
         WindowStyle="None"
         Topmost="True">
     <Grid Background="CadetBlue">
@@ -14,11 +14,11 @@
             <TextBlock Margin="10 0 0 0" Name="tbName" FontSize="70" FontWeight="Bold" Foreground="White"/>
         </StackPanel>
         <StackPanel Name="spBottom">
-            <TextBlock Name="tb1" />
-            <TextBlock Name="tb2" />
-            <TextBlock Name="tb3" />
-            <TextBlock Name="tb4" />
-            <TextBlock Name="tb5" />
+            <TextBlock Name="tb1" FontSize="30"/>
+            <TextBlock Name="tb2" FontSize="30"/>
+            <TextBlock Name="tb3" FontSize="40" FontWeight="Bold"/>
+            <TextBlock Name="tb4" FontSize="30"/>
+            <TextBlock Name="tb5" FontSize="30"/>
         </StackPanel>
 
     </Grid>

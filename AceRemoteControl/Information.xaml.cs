@@ -53,20 +53,20 @@ namespace AceRemoteControl
 
                 if (value)
                 {
+                    
                     Dispatcher.Invoke(() =>
                     {
-                        spTop.Visibility = Visibility.Visible;
-                        spBottom.Visibility = Visibility.Collapsed;
-                        
+                        spTop.Visibility = Visibility.Collapsed;
+                        spBottom.Visibility = Visibility.Visible;
+
                     });
-                    
                 }
                 else
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        spTop.Visibility = Visibility.Collapsed;
-                        spBottom.Visibility = Visibility.Visible;
+                        spTop.Visibility = Visibility.Visible;
+                        spBottom.Visibility = Visibility.Collapsed;
 
                     });
                 }
@@ -127,7 +127,7 @@ namespace AceRemoteControl
 
                     if (myNumber < 0)
                     {
-                        myNumber = mychannels.Count;
+                        myNumber = mychannels.Count - 1;
                     }
                 }
                 else
@@ -147,13 +147,13 @@ namespace AceRemoteControl
 
                 if (first == -1)
                 {
-                    first = mychannels.Count;
+                    first = mychannels.Count - 1;
                 }
 
                 if (first == -2)
                 {
-                    first = mychannels.Count - 1;
-                    second = mychannels.Count;
+                    first = mychannels.Count - 2;
+                    second = mychannels.Count - 1;
                 }
 
                 if (fith == mychannels.Count)
@@ -163,8 +163,8 @@ namespace AceRemoteControl
 
                 if (fith == mychannels.Count + 1)
                 {
+                    forth = 0;
                     fith = 1;
-                    forth = 2;
                 }
 
                 tb1.Text = first + " " + mychannels[first].Text;
@@ -174,6 +174,8 @@ namespace AceRemoteControl
                 tb5.Text = fith + " " + mychannels[fith].Text;
 
                 IsUpDown = true;
+
+                File.WriteAllText(NotifyIconViewModel.HistoryFile, myNumber.ToString());
             }
         }
 
@@ -560,7 +562,7 @@ namespace AceRemoteControl
 
             if (IsUpDown)
             {
-                Top = notPrimary.Bounds.Y - 40;
+                Top = notPrimary.Bounds.Height - 40 - Height;
             }
             else
             {
