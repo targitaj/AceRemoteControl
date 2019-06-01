@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -17,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using AceRemoteControl;
+using Gma.System.MouseKeyHook;
 using Microsoft.Win32;
 using NHotkey.Wpf;
 using Prism.Commands;
@@ -179,10 +181,38 @@ namespace AceRemoteControl
             //e.Handled = (ShouldHandle.IsChecked == true);
         }
 
+        private IKeyboardMouseEvents m_GlobalHook;
+
         private void StartWndProcHandler(IntPtr hwnd)
         {
             _rawInput = new RawPresentationInput(hwnd, RawInputCaptureMode.ForegroundAndBackground);
             _rawInput.KeyPressed += OnKeyPressed;
+
+            m_GlobalHook = Hook.GlobalEvents();
+
+            m_GlobalHook.MouseDown += (sender, args) =>
+            {
+                if (args.Button == MouseButtons.Right)
+                {
+                    if (Application.Current.MainWindow is Information mainWindow)
+                    {
+                        System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)mainWindow.Left + 4, (int)mainWindow.Top + 4);
+                        //mainWindow.Close();
+                    }
+                }
+            };
+
+            m_GlobalHook.MouseUp += (sender, args) =>
+            {
+                if (args.Button == MouseButtons.Right)
+                {
+                    if (Application.Current.MainWindow is Information mainWindow)
+                    {
+                        //System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)mainWindow.Left + 4, (int)mainWindow.Top + 4);
+                        mainWindow.Close();
+                    }
+                }
+            };
             //DeviceCount = _rawInput.NumberOfKeyboards;
         }
 

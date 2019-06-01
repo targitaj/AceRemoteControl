@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -70,9 +71,9 @@ namespace AceRemoteControl
 
                     });
                 }
-                Dispatcher.Invoke(async () =>
+                Dispatcher.Invoke(() =>
                 {
-                    await SetPosition();
+                    SetPosition();
                 });
 
             }
@@ -114,7 +115,7 @@ namespace AceRemoteControl
             }
             var myNumber = int.Parse(number);
 
-            if (!isUp.HasValue)
+            if (!isUp.HasValue && IsUpDown)
             {
                 Text = number;
             }
@@ -519,9 +520,9 @@ namespace AceRemoteControl
         public Information()
         {
             InitializeComponent();
-            Activated += async (sender, args) =>
+            Activated += (sender, args) =>
             {
-                await SetPosition();
+                SetPosition();
                 //var returnScreens = new Func<Screen[]>(() => { return Screen.AllScreens; });
 
                 //Task<Screen[]> task = new Task<Screen[]>();
@@ -547,9 +548,9 @@ namespace AceRemoteControl
             };
         }
 
-        private async Task SetPosition()
+        private void SetPosition()
         {
-            var screens = await Task.Run(() => Screen.AllScreens);
+            var screens = Screen.AllScreens;
 
             var notPrimary = screens.FirstOrDefault(f => !Equals(f, Screen.PrimaryScreen));
 
@@ -563,11 +564,62 @@ namespace AceRemoteControl
             if (IsUpDown)
             {
                 Top = notPrimary.Bounds.Height - 40 - Height;
+
+                System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)Left + 4, (int)Top + 4);
             }
             else
             {
                 Top = 40;
             }
+
+            //Activate();
+            //Focus();
+            GlobalActivate(this);
         }
+
+        const UInt32 SWP_NOSIZE = 0x0001;
+        const UInt32 SWP_NOMOVE = 0x0002;
+        const UInt32 SWP_SHOWWINDOW = 0x0040;
+
+        /// <summary>
+        /// Activate a window from anywhere by attaching to the foreground window
+        /// </summary>
+        public static void GlobalActivate(Window w)
+        {
+            //Get the process ID for this window's thread
+            var interopHelper = new WindowInteropHelper(w);
+            var thisWindowThreadId = GetWindowThreadProcessId(interopHelper.Handle, IntPtr.Zero);
+
+            //Get the process ID for the foreground window's thread
+            var currentForegroundWindow = GetForegroundWindow();
+            var currentForegroundWindowThreadId = GetWindowThreadProcessId(currentForegroundWindow, IntPtr.Zero);
+
+            //Attach this window's thread to the current window's thread
+            AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, true);
+
+            //Set the window position
+            SetWindowPos(interopHelper.Handle, new IntPtr(0), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
+
+            //Detach this window's thread from the current window's thread
+            AttachThreadInput(currentForegroundWindowThreadId, thisWindowThreadId, false);
+
+            //Show and activate the window
+            if (w.WindowState == WindowState.Minimized) w.WindowState = WindowState.Normal;
+            w.Show();
+            w.Activate();
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+
+        [DllImport("user32.dll")]
+        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
     }
 }
