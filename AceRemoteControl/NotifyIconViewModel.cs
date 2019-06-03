@@ -36,6 +36,8 @@ namespace AceRemoteControl
     public class NotifyIconViewModel : BindableBase
     {
         public const string HistoryFile = "history.txt";
+        public const string UpDownFile = "updown.txt";
+
         private static string _keyBoardName;
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace AceRemoteControl
 
             m_GlobalHook = Hook.GlobalEvents();
 
-            m_GlobalHook.MouseDown += (sender, args) =>
+            m_GlobalHook.MouseDownExt += (sender, args) =>
             {
                 if (args.Button == MouseButtons.Right)
                 {

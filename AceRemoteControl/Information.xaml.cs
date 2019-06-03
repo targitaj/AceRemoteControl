@@ -109,10 +109,20 @@ namespace AceRemoteControl
         {
             string number = "0";
 
-            if (File.Exists(NotifyIconViewModel.HistoryFile))
+            if (!IsUpDown)
             {
-                number = File.ReadAllText(NotifyIconViewModel.HistoryFile);
+                if (File.Exists(NotifyIconViewModel.HistoryFile))
+                {
+                    number = File.ReadAllText(NotifyIconViewModel.HistoryFile);
+                }
+
+                File.WriteAllText(NotifyIconViewModel.UpDownFile, number);
             }
+            
+
+
+            number = File.ReadAllText(NotifyIconViewModel.UpDownFile);
+
             var myNumber = int.Parse(number);
 
             if (!isUp.HasValue && IsUpDown)
@@ -176,7 +186,7 @@ namespace AceRemoteControl
 
                 IsUpDown = true;
 
-                File.WriteAllText(NotifyIconViewModel.HistoryFile, myNumber.ToString());
+                File.WriteAllText(NotifyIconViewModel.UpDownFile, myNumber.ToString());
             }
         }
 
