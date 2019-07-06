@@ -35,6 +35,8 @@ namespace AceRemoteControl
 
         public DelegateCommand ApplyCommand => new DelegateCommand(Apply);
 
+        public DelegateCommand ExportCommand => new DelegateCommand(Export);
+
         public DelegateCommand DownCommand => new DelegateCommand(Down);
 
 
@@ -190,6 +192,30 @@ namespace AceRemoteControl
         private void Apply()
         {
             File.WriteAllText(FILE_CHANNELS, JsonConvert.SerializeObject(Channels));
+        }
+
+        private void Export()
+        {
+            string list = Information.GetListOfChannels();
+            var splitStr = list.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var result = "#EXTM3U" + Environment.NewLine;
+
+            foreach (var channel in Channels)
+            {
+                foreach(var ll in splitStr)
+                {
+                    if (ll.Contains(channel.Text))
+                    {
+                        var index = splitStr.IndexOf(ll);
+                        result += splitStr[index] + Environment.NewLine;
+                        result += splitStr[index+1] + Environment.NewLine;
+                        result += splitStr[index+2] + Environment.NewLine;
+                        break;
+                    }
+                }
+            }
+
+            File.WriteAllText("export.m3u", result);
         }
 
         public static List<Channel> ReadAllChannels(string sourceStr)

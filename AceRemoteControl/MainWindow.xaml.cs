@@ -116,5 +116,10 @@ namespace AceRemoteControl
             //_rawInput.KeyPressed += OnKeyPressed;
                 //DeviceCount = _rawInput.NumberOfKeyboards;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -72,6 +72,7 @@
             <Button Height="30" Name="ApplyBtn" Command="{Binding Path=ApplyCommand}" >Сохранить</Button>
             <Button Height="30" Name="SaveBtn" Command="{Binding Path=SaveCommand}" Margin="10 0 0 0">Сохранить и закрыть</Button>
             <Button Margin="10 0 0 0" Height="30" Click="ButtonBase_OnClick">Закрыть</Button>
+            <Button Margin="10 0 0 0" Height="30" Command="{Binding Path=ExportCommand}">Экспорт</Button>
         </StackPanel>
         
     </Grid>
