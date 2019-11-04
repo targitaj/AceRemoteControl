@@ -142,7 +142,7 @@ namespace AceRemoteControl
                         myNumber = mychannels.Count - 1;
                     }
                 }
-                else
+                else if (isUp == false)
                 {
                     myNumber++;
 
