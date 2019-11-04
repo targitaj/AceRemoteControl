@@ -114,6 +114,7 @@ namespace AceRemoteControl
                 if (File.Exists(NotifyIconViewModel.HistoryFile))
                 {
                     number = File.ReadAllText(NotifyIconViewModel.HistoryFile);
+                    number = (int.Parse(number) - 1).ToString();
                 }
 
                 File.WriteAllText(NotifyIconViewModel.UpDownFile, number);
