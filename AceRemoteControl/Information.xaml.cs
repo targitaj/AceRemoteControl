@@ -213,7 +213,7 @@ namespace AceRemoteControl
                 }
             });
 
-            if (ConfigurationManager.AppSettings["UseEdem"] == "true")
+            if (ConfigurationManager.AppSettings["UseEdem"] == "false")
             {
                 _lastThread = new Thread(() =>
                 {
@@ -236,9 +236,9 @@ namespace AceRemoteControl
                         if (!string.IsNullOrWhiteSpace(channel))
                         {
                             string regex =
-                                $"{Regex.Escape($"tvg-name=\"{channel}")}(.*?)\r\n(.*?)\r\n(.*?)\r\n";
+                                $"{Regex.Escape($",{channel}")}\n(.*?)\n(.*?)\n";
                             var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
-                            var url = matches[0].Groups[3].Value;
+                            var url = matches[0].Groups[2].Value;
 
                             var vlcEngineProcess = Process.GetProcessesByName("vlc");
                             foreach (var process in vlcEngineProcess)

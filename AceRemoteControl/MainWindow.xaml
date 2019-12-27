@@ -35,9 +35,6 @@
                     <StackPanel Orientation="Horizontal">
                         <CheckBox IsChecked="{Binding Path=IsSelected, Mode=TwoWay}"/>
                         <TextBlock Text="{Binding Path=Text}" />
-                        <TextBlock Text=" (" />
-                        <TextBlock Text="{Binding Path=Type}" />
-                        <TextBlock Text=")" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -60,9 +57,6 @@
                         <CheckBox IsChecked="{Binding Path=IsSelected, Mode=TwoWay}"/>
                         <TextBlock Margin="5 0 0 0" Text="{Binding Path=PositionNumber}" />
                         <TextBlock Margin="5 0 0 0" Text="{Binding Path=Text}" />
-                        <TextBlock Text=" (" />
-                            <TextBlock Text="{Binding Path=Type}" />
-                        <TextBlock Text=")" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
