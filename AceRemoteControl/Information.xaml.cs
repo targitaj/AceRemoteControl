@@ -240,14 +240,13 @@ namespace AceRemoteControl
                             var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
                             var url = matches[0].Groups[2].Value;
 
-                            var vlcEngineProcess = Process.GetProcessesByName("vlc");
+                            var vlcEngineProcess = Process.GetProcessesByName("mpc-hc64");
                             foreach (var process in vlcEngineProcess)
                             {
                                 process.Kill();
                             }
 
-                            Process.Start(ConfigurationManager.AppSettings["VLCPath"],
-                                $"--fullscreen --audio-language=rus --qt-fullscreen-screennumber={Screen.AllScreens.Length - 1} {url}");
+                            Process.Start(ConfigurationManager.AppSettings["AcePlayerPath"], $" /monitor {ConfigurationManager.AppSettings["ScreenNumber"]} /fullscreen {url}");
                         }
                     }
                     catch
