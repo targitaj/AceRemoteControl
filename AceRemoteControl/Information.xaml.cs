@@ -195,14 +195,14 @@ namespace AceRemoteControl
         {
             TryAction(() => { stream?.Close(); });
             TryAction(() => { stream?.Dispose(); });
-            TryAction(() => { contextResponse.OutputStream.Close(); });
-            TryAction(() => { contextResponse.OutputStream.Dispose(); });
-            TryAction(() => { contextResponse.Close(); });
-            TryAction(() => { httpListener.Close(); });
-            TryAction(() => { _lastThread.Abort(); });
-            TryAction(() => { _windowCloseThread.Abort(); });
-            TryAction(() => { _monitorStatusThread.Abort(); });
-            TryAction(() => { httpListener.Close(); });
+            TryAction(() => { contextResponse?.OutputStream.Close(); });
+            TryAction(() => { contextResponse?.OutputStream.Dispose(); });
+            TryAction(() => { contextResponse?.Close(); });
+            TryAction(() => { httpListener?.Close(); });
+            TryAction(() => { _lastThread?.Abort(); });
+            TryAction(() => { _windowCloseThread?.Abort(); });
+            TryAction(() => { _monitorStatusThread?.Abort(); });
+            TryAction(() => { httpListener?.Close(); });
 
             _windowCloseThread = new Thread(() =>
             {
@@ -240,13 +240,13 @@ namespace AceRemoteControl
                             var matches = Regex.Matches(list, regex, RegexOptions.Singleline);
                             var url = matches[0].Groups[2].Value;
 
-                            var vlcEngineProcess = Process.GetProcessesByName("mpc-hc64");
+                            var vlcEngineProcess = Process.GetProcessesByName("mpvnet");
                             foreach (var process in vlcEngineProcess)
                             {
                                 process.Kill();
                             }
 
-                            Process.Start(ConfigurationManager.AppSettings["AcePlayerPath"], $" /monitor {ConfigurationManager.AppSettings["ScreenNumber"]} /fullscreen {url}");
+                            Process.Start(ConfigurationManager.AppSettings["AcePlayerPath"], $" {url}");
                         }
                     }
                     catch

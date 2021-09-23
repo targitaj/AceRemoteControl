@@ -14,7 +14,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using NHotkey.Wpf;
 using Application = System.Windows.Application;
 using MenuItem = System.Windows.Controls.MenuItem;
 
