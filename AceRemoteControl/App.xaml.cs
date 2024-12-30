@@ -22,6 +22,25 @@ namespace AceRemoteControl
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            var text = string.Empty;
+
+            for (int i = 1; i <= 111; i++)
+            {
+                text += i;
+            }
+
+            var counter = 0;
+
+            foreach (var seven in text)
+            {
+                if (seven == '7')
+                {
+                    counter++;
+                }
+            }
+
+            MessageBox.Show(counter.ToString());
+
             notifyIcon = (NotifyIconWpf) FindResource("NotifyIconWpf");
 
             notifyIcon.Icon = new BitmapImage(new Uri("/AceRemoteControl;component/remote_control.ico",
